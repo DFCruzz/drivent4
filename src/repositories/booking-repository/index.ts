@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import { prisma } from '@/config';
 
 export type BookingIdWithRoomAndHotel = {
@@ -54,8 +53,17 @@ async function updateBooking(id: number, roomId: number) {
   });
 }
 
+async function findRoomByRoomId(roomId: number) {
+  return prisma.booking.findFirst({
+    where: {
+      roomId,
+    },
+  });
+}
+
 export default {
   findBooking,
   createBooking,
   updateBooking,
+  findRoomByRoomId,
 };
