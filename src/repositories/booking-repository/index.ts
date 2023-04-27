@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/config';
 
 export type BookingIdWithRoomAndHotel = {
@@ -11,10 +12,10 @@ export type BookingIdWithRoomAndHotel = {
   };
 };
 
-async function findBooking(bookingId: number): Promise<BookingIdWithRoomAndHotel | null> {
+async function findBooking(userId: number): Promise<BookingIdWithRoomAndHotel | null> {
   return prisma.booking.findFirst({
     where: {
-      id: bookingId,
+      userId,
     },
     select: {
       id: true,
@@ -52,3 +53,9 @@ async function updateBooking(id: number, roomId: number) {
     },
   });
 }
+
+export default {
+  findBooking,
+  createBooking,
+  updateBooking,
+};
