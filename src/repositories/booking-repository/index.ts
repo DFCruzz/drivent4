@@ -54,7 +54,7 @@ async function updateBooking(id: number, roomId: number) {
 }
 
 async function findRoomByRoomId(roomId: number) {
-  return prisma.booking.findFirst({
+  return prisma.booking.findMany({
     where: {
       roomId,
     },
