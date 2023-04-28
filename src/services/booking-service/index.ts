@@ -1,6 +1,5 @@
-import { Booking } from '@prisma/client';
 import { forbiddenError, notFoundError, roomUnavailableError } from '@/errors';
-import bookingRepository, { BookingIdWithRoomAndHotel } from '@/repositories/booking-repository';
+import bookingRepository from '@/repositories/booking-repository';
 import roomRepository from '@/repositories/room-repository';
 
 async function verifyRoomAvailability(roomId: number) {
@@ -39,3 +38,11 @@ async function updateBooking(bookingId: number, roomId: number, userId: number) 
 
   return newBooking;
 }
+
+const bookingService = {
+  getBooking,
+  postBooking,
+  updateBooking,
+};
+
+export default bookingService;
