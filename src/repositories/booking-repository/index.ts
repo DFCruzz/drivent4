@@ -61,9 +61,18 @@ async function findRoomByRoomId(roomId: number) {
   });
 }
 
+async function findBookingById(id: number) {
+  return prisma.booking.findFirst({
+    where: {
+      id,
+    },
+  });
+}
+
 export default {
   findBooking,
   createBooking,
   updateBooking,
   findRoomByRoomId,
+  findBookingById,
 };

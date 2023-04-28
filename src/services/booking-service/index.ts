@@ -1,5 +1,5 @@
 import { Booking } from '@prisma/client';
-import { notFoundError, roomUnavailableError } from '@/errors';
+import { forbiddenError, notFoundError, roomUnavailableError } from '@/errors';
 import bookingRepository, { BookingIdWithRoomAndHotel } from '@/repositories/booking-repository';
 import roomRepository from '@/repositories/room-repository';
 
@@ -11,9 +11,31 @@ async function verifyRoomAvailability(roomId: number) {
   if (room.capacity === isCapacityMaxed.length) throw roomUnavailableError();
 }
 
-async function getBooking(userId: number): Promise<BookingIdWithRoomAndHotel> {
+async function getBooking(userId: number) {
   const booking = await bookingRepository.findBooking(userId);
   if (!booking) throw notFoundError();
 
   return booking;
+}
+
+async function postBooking(userId: number, roomId: number) {
+  await verifyRoomAvailability(roomId);
+
+  const booking = await bookingRepository.createBooking(userId, roomId);
+
+  return booking;
+}
+
+async function updateBooking(bookingId: number, roomId: number, userId: number) {
+  const userBooking = await bookingRepository.findBooking(userId);
+  if (!userBooking) throw forbiddenError();
+
+  await verifyRoomAvailability(roomId);
+
+  const booking = await bookingRepository.findBookingById(bookingId);
+  if (!booking) throw notFoundError();
+
+  const newBooking = await bookingRepository.updateBooking(bookingId, roomId);
+
+  return newBooking;
 }
