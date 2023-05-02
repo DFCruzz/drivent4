@@ -152,8 +152,7 @@ describe('POST /booking', () => {
         await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
         const body = { roomId: 1 };
 
-        const response = await server.get('/booking').set('Authorization', `Bearer ${token}`).send(body);
-
+        const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
         expect(response.status).toBe(httpStatus.FORBIDDEN);
       });
 
