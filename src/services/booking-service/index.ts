@@ -1,6 +1,9 @@
+import { TicketStatus } from '@prisma/client';
 import { forbiddenError, notFoundError, roomUnavailableError } from '@/errors';
 import bookingRepository from '@/repositories/booking-repository';
+import enrollmentRepository from '@/repositories/enrollment-repository';
 import roomRepository from '@/repositories/room-repository';
+import ticketsRepository from '@/repositories/tickets-repository';
 
 async function verifyRoomAvailability(roomId: number) {
   const room = await roomRepository.findRoomById(roomId);
@@ -18,11 +21,18 @@ async function getBooking(userId: number) {
 }
 
 async function postBooking(userId: number, roomId: number) {
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if (!enrollment) throw notFoundError();
+
+  const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
+  if (!ticket || ticket.status === 'RESERVED' || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel)
+    throw forbiddenError();
+
   await verifyRoomAvailability(roomId);
 
   const booking = await bookingRepository.createBooking(userId, roomId);
 
-  return booking;
+  return { bookingId: booking.id };
 }
 
 async function updateBooking(bookingId: number, roomId: number, userId: number) {
